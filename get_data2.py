@@ -5,15 +5,17 @@ import unicodedata
 import numpy as np
 import fasttext
 import codecs
-
+# #
 classifier = fasttext.supervised('combined_train.txt', 'model')
-# result = classifier.test('combined_test.txt')
-# print 'P@1:', result.precision
-# print 'R@1:', result.recall
-# print 'Number of examples:', result.nexamples
+result = classifier.test('combined_test.txt',k=5)
+print 'P@1:', result.precision
+print 'R@1:', result.recall
+print 'Number of examples:', result.nexamples
 print classifier
 
-reviews = ['amazing food. very good, excellent service','very bad, worst ever, gross']
+with open('combined_train.txt') as data:
+    reviews=data.read()
+
 labels=classifier.predict(reviews)
 print labels
 print "done"
@@ -23,7 +25,7 @@ print "done"
 # ratings=[]
 # x=0
 # num_load= 100
-#
+
 
 
 # with open('/Users/Eli/Desktop/reviews.json') as data_file:    # with handles closing file
@@ -48,7 +50,7 @@ print "done"
 #
 # w=csv.writer(file('reviews_100.csv','wb'),dialect='excel')
 # w.writerows(reviews)
-
+#
 # #load reviews and ratings from csv files
 # reviews_loaded_initial=[]
 # with open('reviews_100.csv', 'Un') as csvfile:
@@ -70,12 +72,14 @@ print "done"
 # combined_test=[]
 # combined_train=[]
 # x=0
+#
 # for x in range (len(numpy_reviews)/2):
-#     combined_test.append(numpy_reviews.item(x)+"__label__"+str(numpy_ratings.item(x)))
+#     combined_test.append(numpy_reviews.item(x))
 #     x=x+1
 #
 # for x in range (len(numpy_reviews)/2):
-#     combined_train.append(numpy_reviews.item(x)+"__label__"+str(numpy_ratings.item(x)))
+#     x=x+len(numpy_reviews)/2
+#     combined_train.append("__label__"+str(numpy_ratings.item(x))+", "+numpy_reviews.item(x))
 #     x=x+1
 #
 # #save combined list to txt files
@@ -87,9 +91,9 @@ print "done"
 #     for element in combined_train:
 #         my_file.write(element + "\n")
 #
-#
-#
-#
+
+
+
 
 
 ##turn labels into one hot vectors
