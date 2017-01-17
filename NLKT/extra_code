@@ -1,0 +1,85 @@
+
+
+
+print "Creating the bag of words...\n"
+from sklearn.feature_extraction.text import CountVectorizer
+# Initialize the "CountVectorizer" object, which is scikit-learn's
+# bag of words tool.
+vectorizer = CountVectorizer(analyzer = "word",   \
+                             tokenizer = None,    \
+                             preprocessor = None, \
+                             stop_words = None,   \
+                             max_features = 5000)
+# fit_transform() does two functions: First, it fits the model
+# and learns the vocabulary; second, it transforms our training data
+# into feature vectors. The input to fit_transform should be a list of
+# strings.
+train_data_features = vectorizer.fit_transform(clean_train_reviews)
+# Numpy arrays are easy to work with, so convert the result to an
+# array
+train_data_features = train_data_features.toarray()
+
+#print train_data_features
+
+"""
+
+vocab = vectorizer.get_feature_names()
+print vocab
+
+
+# Sum up the counts of each vocabulary word
+dist = np.sum(train_data_features, axis=0)
+
+# For each, print the vocabulary word and the number of times it
+# appears in the training set
+for tag, count in zip(vocab, dist):
+    print count, tag
+"""
+
+print "Training the random forest..."
+from sklearn.ensemble import RandomForestClassifier
+# Initialize a Random Forest classifier with 100 trees
+forest = RandomForestClassifier(n_estimators = 100)
+
+# Fit the forest to the training set, using the bag of words as
+# features and the sentiment labels as the response variable
+#
+# This may take a few minutes to run
+forest = forest.fit(train_data_features, train_ratings)
+
+
+# with open('random_forest.pickle', 'wb') as f: # "wb" write bytes
+#     pickle.dump(forest, f)#dumps classifier
+
+# pickle_in = open('random_forest.pickle','rb') # "rb" read bytes
+# forest = pickle.load(pickle_in)
+
+
+
+
+print "done trainting...now testing  test set"
+
+test_data_features = vectorizer.transform(clean_test_reviews)
+test_data_features = test_data_features.toarray()
+
+# Use the random forest to make sentiment label predictions
+result = forest.predict(test_data_features)
+
+print "done testing, now calculating accuracy statistics..."
+
+differences=[]
+differences=result-test_ratings
+
+correct=0
+
+for x in range(len(result)):
+    if int(result[x])==int(test_ratings[x]):
+        correct=correct+1
+
+print 'correct: '+ str(correct)
+print 'total test ratings: '+ str(len(test_ratings))
+print '% correct: '+ str(float(correct)/float(len(test_ratings))*100)
+
+average_diff = float(sum(differences))/float(len(differences))
+
+print 'average difference: '+str(average_diff)
